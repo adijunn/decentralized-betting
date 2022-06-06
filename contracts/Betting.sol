@@ -4,6 +4,8 @@ pragma solidity >0.4.99;
 
 contract Betting {
     address payable public owner;
+    //mapping (address => uint256) public balance;
+    uint256 public balance;
     uint256 public minimumBet;
     uint256 public totalBetsOne;
     uint256 public totalBetsTwo;
@@ -22,7 +24,7 @@ contract Betting {
 
     constructor() public {
         owner = payable(msg.sender);
-        minimumBet = 100000000000000;
+        minimumBet = 1;
     }
 
     fallback() external payable {
@@ -31,6 +33,7 @@ contract Betting {
 
     receive() external payable {
         // custom function code
+        balance += msg.value;
     }
 
     function kill() public {
@@ -67,7 +70,7 @@ contract Betting {
       }
    }
 
-    function distributePrizes(uint16 teamWinner) public {
+    function distributePrizes(uint16 teamWinner) public payable{
       address payable[1000] memory winners;
       //We have to create a temporary in memory array with fixed size
       //Let's choose 1000
@@ -123,5 +126,17 @@ contract Betting {
    }
 
 }
+
+
+/*contract WarriorsToken {
+    address public minter;
+    mapping (address => uint) public balances;
+
+    constructor () {
+        minter = msg.sender
+    }
+
+    function mint(address )
+}*/
 
 
