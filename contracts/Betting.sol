@@ -4,13 +4,16 @@ pragma solidity >0.4.99;
 
 contract Betting {
     address payable public owner;
-    //mapping (address => uint256) public balance;
+    mapping (address => uint256) public balances;
     uint256 public balance;
     uint256 public minimumBet;
     uint256 public totalBetsOne;
     uint256 public totalBetsTwo;
     uint256 public numberOfBets;
     uint256 public maxAmountOfBets = 1000;
+
+    WarriorsToken public warriors;
+    CelticsToken public celtics;
    
     address payable[] public players;
    
@@ -25,6 +28,8 @@ contract Betting {
     constructor() public {
         owner = payable(msg.sender);
         minimumBet = 1;
+        warriors = new WarriorsToken();
+        celtics = new CelticsToken();
     }
 
     fallback() external payable {
@@ -64,9 +69,11 @@ contract Betting {
       //at the end, we increment the stakes of the team selected with the player bet
       if ( _teamSelected == 1){
           totalBetsOne += msg.value;
+          warriors.mint(msg.sender, msg.value);
       }
       else{
           totalBetsTwo += msg.value;
+          celtics.mint(msg.sender, msg.value);
       }
    }
 
@@ -117,26 +124,59 @@ contract Betting {
       totalBetsTwo = 0;
     }
 
-    function AmountOne() public view returns(uint256){
+    function EtherAmountWarriors() public view returns(uint256){
        return totalBetsOne;
    }
    
-   function AmountTwo() public view returns(uint256){
+   function EtherAmountCeltics() public view returns(uint256){
        return totalBetsTwo;
+   }
+
+   function TokenWarriors(address player) public view returns(uint256){
+       return warriors.TokenWarriors(player);
+   }
+
+   function TokenCeltics(address player) public view returns(uint256){
+       return celtics.TokenCeltics(player);
    }
 
 }
 
 
-/*contract WarriorsToken {
+contract WarriorsToken {
     address public minter;
     mapping (address => uint) public balances;
 
     constructor () {
-        minter = msg.sender
+        minter = msg.sender;
     }
 
-    function mint(address )
-}*/
+    function mint(address receiver, uint amount) public {
+        require(msg.sender == minter);
+        balances[receiver] += amount;
+    }
+
+    function TokenWarriors(address player) public view returns(uint256){
+       return balances[player];
+   }
+}
+
+contract CelticsToken {
+    address public minter;
+    mapping (address => uint) public balances;
+
+    constructor () {
+        minter = msg.sender;
+    }
+
+    function mint(address receiver, uint amount) public {
+        require(msg.sender == minter);
+        balances[receiver] += amount;
+    }
+
+    function TokenCeltics(address player) public view returns(uint256){
+       return balances[player];
+   }
+}
 
 
