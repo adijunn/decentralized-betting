@@ -110,10 +110,16 @@ contract Betting {
       for(uint256 j = 0; j < count; j++){
           // Check that the address in this fixed array is not empty
          if(winners[j] != address(0))
-            add = winners[j];
-            bet = playerInfo[add].amountBet;
+            
+            if (teamWinner == 1) {
+                winners[j].transfer((TokenWarriors(winners[j]) / WinnerBet) * (WinnerBet + LoserBet));
+            } else {
+                winners[j].transfer((TokenCeltics(winners[j]) / WinnerBet) * (WinnerBet + LoserBet));
+            }
+            //add = winners[j];
+            //bet = playerInfo[add].amountBet;
             //Transfer the money to the user
-            winners[j].transfer((bet*(10000+(LoserBet*10000/WinnerBet)))/10000 );
+            //winners[j].transfer((bet*(10000+(LoserBet*10000/WinnerBet)))/10000 );
       }
       
       delete playerInfo[playerAddress]; // Delete all the players
